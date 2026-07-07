@@ -1,0 +1,208 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "ShortLink API",
+    "description": "Production-grade URL Shortener & Analytics API specification.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/",
+      "description": "Relative server route"
+    }
+  ],
+  "paths": {
+    "/api/shorten": {
+      "post": {
+        "summary": "Shorten a long URL",
+        "description": "Creates a Base62 shortened link from a long URL. Optionally accepts a custom alias and an expiration date.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["url"],
+                "properties": {
+                  "url": {
+                    "type": "string",
+                    "format": "uri",
+                    "example": "https://example.com/very/long/path/to/resource"
+                  },
+                  "alias": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 30,
+                    "example": "my-campaign"
+                  },
+                  "expiresAt": {
+                    "type": "string",
+                    "format": "date-time",
+                    "nullable": true,
+                    "example": "2026-12-31T23:59:59Z"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "URL shortened successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "shortCode": {
+                      "type": "string",
+                      "example": "my-campaign"
+                    },
+                    "shortUrl": {
+                      "type": "string",
+                      "example": "http://localhost:3000/my-campaign"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Invalid input validation errors or alias conflict"
+          }
+        }
+      }
+    },
+    "/{shortCode}": {
+      "get": {
+        "summary": "Redirect to long URL",
+        "description": "Redirects the client to the mapped long URL using HTTP 302.",
+        "parameters": [
+          {
+            "name": "shortCode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "302": {
+            "description": "Redirect to the target destination"
+          },
+          "404": {
+            "description": "Short code not found"
+          },
+          "410": {
+            "description": "URL has expired and is gone"
+          }
+        }
+      }
+    },
+    "/api/analytics/{shortCode}": {
+      "get": {
+        "summary": "Get click analytics",
+        "description": "Retrieve comprehensive click metrics and telemetry distributions.",
+        "parameters": [
+          {
+            "name": "shortCode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "period",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["7d", "30d", "90d"],
+              "default": "30d"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Analytics payload summary returned successfully"
+          },
+          "404": {
+            "description": "Short code not found"
+          }
+        }
+      }
+    },
+    "/api/urls/{shortCode}": {
+      "get": {
+        "summary": "Get URL metadata",
+        "description": "Retrieve static URL settings and click counts.",
+        "parameters": [
+          {
+            "name": "shortCode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Metadata returned successfully"
+          },
+          "404": {
+            "description": "Short code not found"
+          }
+        }
+      }
+    },
+    "/api/qr/{shortCode}": {
+      "get": {
+        "summary": "Get QR Code",
+        "description": "Generates and serves a PNG QR Code image pointing to the short URL.",
+        "parameters": [
+          {
+            "name": "shortCode",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "PNG image of the QR Code",
+            "content": {
+              "image/png": {
+                "schema": {
+                  "type": "string",
+                  "format": "binary"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Short code not found"
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "System health check",
+        "description": "Returns status of API database and cache interfaces.",
+        "responses": {
+          "200": {
+            "description": "System is healthy"
+          },
+          "503": {
+            "description": "One or more backends are down"
+          }
+        }
+      }
+    }
+  }
+}

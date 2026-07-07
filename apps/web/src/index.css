@@ -1,0 +1,42 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --color-primary-50: #f5f3ff;
+  --color-primary-100: #ede9fe;
+  --color-primary-200: #ddd6fe;
+  --color-primary-300: #c084fc;
+  --color-primary-400: #a78bfa;
+  --color-primary-500: #8b5cf6;
+  --color-primary-600: #7c3aed;
+  --color-primary-700: #6d28d9;
+  --color-primary-800: #5b21b6;
+  --color-primary-900: #4c1d95;
+}
+
+body {
+  @apply bg-slate-50 text-slate-900 font-sans antialiased selection:bg-indigo-100;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.dark body {
+  @apply bg-[#0b0f19] text-slate-100 selection:bg-indigo-950;
+}
+
+/* Custom Scrollbar for premium dashboards */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-300/80 rounded-full hover:bg-slate-400/80;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  @apply bg-slate-800/80 rounded-full hover:bg-slate-700/80;
+}

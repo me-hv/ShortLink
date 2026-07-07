@@ -1,0 +1,11 @@
+{
+  "name": "shortlink-monorepo",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm --filter api dev",
+    "build": "pnpm --filter api build && pnpm --filter web build",
+    "test": "pnpm --filter api test",
+    "db:migrate": "pnpm --filter api db:migrate"
+  }
+}

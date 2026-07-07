@@ -1,0 +1,5 @@
+# This is a Prisma Schema Migration lock file.
+# It is used to ensure that only one migration tool is running at a time.
+# Detailed info: https://pris.ly/d/migration-lock
+
+provider = "postgresql"
