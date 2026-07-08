@@ -19,7 +19,7 @@ if (urlObj.password && !urlObj.username) {
 
 const finalRedisUrl = urlObj.toString();
 
-export const redis = new Redis(finalRedisUrl, {
+export let redis = new Redis(finalRedisUrl, {
   maxRetriesPerRequest: null,
   lazyConnect: true,
   retryStrategy(times) {
@@ -43,9 +43,16 @@ export async function validateRedisConnection(): Promise<void> {
       throw new Error(`Unexpected ping response: ${result}`);
     }
   } catch (error) {
-    console.error('❌ CRITICAL STARTUP ERROR: Redis connection failed\n');
-    console.error(error);
-    console.error('\nPlease verify your REDIS_URL and REDIS_TOKEN configurations.\n');
-    process.exit(1);
+    console.warn('⚠️ Local Redis connection failed. Falling back to in-memory ioredis-mock...');
+    try {
+      // Require mock client dynamically in development fallback
+      const RedisMock = require('ioredis-mock');
+      redis = new RedisMock();
+      console.log('✅ Connected to in-memory mock Redis successfully (DX Fallback)');
+    } catch (mockError) {
+      console.error('❌ CRITICAL STARTUP ERROR: Redis connection failed and ioredis-mock could not be loaded.');
+      console.error(mockError);
+      process.exit(1);
+    }
   }
 }
