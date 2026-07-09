@@ -12,6 +12,7 @@ vi.mock('ioredis', () => {
 import app from '../src/app.js';
 import { prisma } from '../src/lib/prisma.js';
 import { redis } from '../src/config/redis.js';
+import { UrlService } from '../src/services/url.js';
 import { execSync } from 'child_process';
 import path from 'path';
 import { fileURLToPath } from 'url';
@@ -42,8 +43,8 @@ describe('ShortLink Phase 2 - Redis Caching & Rate Limiting', () => {
       const cachedBefore = await redis.get(cacheKey);
       expect(cachedBefore).toBeNull();
 
-      // Spy on raw query since PGlite index bug requires raw queries
-      const querySpy = vi.spyOn(prisma, '$queryRawUnsafe');
+      // Spy on service method instead of getter proxy
+      const querySpy = vi.spyOn(UrlService.prototype, 'getUrlByShortCode');
 
       const res1 = await request(app).get(`/${shortCode}`);
       expect(res1.status).toBe(302);

@@ -80,11 +80,11 @@ export class UrlService {
   }
 
   async getUrlByShortCode(shortCode: string): Promise<Url> {
-    const records = await prisma.$queryRawUnsafe<Url[]>(
-      'SELECT * FROM "Url" WHERE "shortCode" = $1 LIMIT 1',
-      shortCode
-    );
-    const urlRecord = records[0];
+    const urlRecord = await prisma.url.findUnique({
+      where: {
+        shortCode,
+      },
+    });
 
     if (!urlRecord || !urlRecord.isActive) {
       throw new NotFoundError('URL not found or inactive');
