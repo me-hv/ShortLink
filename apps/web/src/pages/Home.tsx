@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useShortenUrlMutation } from '../hooks/useApi.js';
+import { API_BASE_URL } from '../services/api.js';
 import { Button } from '../components/Button.js';
 import { Input } from '../components/Input.js';
 import { Card } from '../components/Card.js';
@@ -81,7 +82,7 @@ export function Home() {
 
   const downloadQrCode = async (shortCode: string) => {
     try {
-      const response = await fetch(`/api/qr/${shortCode}`);
+      const response = await fetch(`${API_BASE_URL}/api/qr/${shortCode}`);
       if (!response.ok) throw new Error('Failed to fetch QR code image');
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
@@ -245,7 +246,7 @@ export function Home() {
               {/* QR Image */}
               <div className="p-4 bg-white rounded-2xl border border-slate-150 shadow-inner">
                 <img
-                  src={`/api/qr/${qrModalShortCode}`}
+                  src={`${API_BASE_URL}/api/qr/${qrModalShortCode}`}
                   alt={`QR code for ${qrModalShortCode}`}
                   className="w-48 h-48 block"
                 />

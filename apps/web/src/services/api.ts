@@ -1,8 +1,12 @@
 import axios from 'axios';
 import type { ShortenResponse, AnalyticsSummary, UrlMetadata } from '../types/index.js';
 
+export const API_BASE_URL =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.DEV ? 'http://localhost:3000' : 'https://api-production-7604.up.railway.app');
+
 const api = axios.create({
-  baseURL: '', // Base path uses Vite dev proxy in local development
+  baseURL: API_BASE_URL,
 });
 
 export const apiService = {
