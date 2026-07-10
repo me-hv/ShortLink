@@ -205,13 +205,18 @@ export function Home() {
                   <Button
                     variant="outline"
                     size="sm"
-                    onClick={() => setQrModalShortCode(item.shortCode)}
+                    onClick={() => {
+                      const code = item.shortCode.includes('/')
+                        ? item.shortCode.split('/').pop()
+                        : (item.shortUrl && item.shortUrl.includes('/') ? item.shortUrl.split('/').pop() : item.shortCode);
+                      setQrModalShortCode(code || null);
+                    }}
                     title="View QR Code"
                   >
                     <QrCode className="w-4 h-4 mr-1.5 text-indigo-500" />
                     QR
                   </Button>
-                  <Link to={`/analytics/${item.shortCode}`}>
+                  <Link to={`/analytics/${item.shortCode.includes('/') ? item.shortCode.split('/').pop() : item.shortCode}`}>
                     <Button variant="secondary" size="sm" title="View Detailed Analytics">
                       <BarChart3 className="w-4 h-4 mr-1.5 text-violet-500" />
                       Analytics
