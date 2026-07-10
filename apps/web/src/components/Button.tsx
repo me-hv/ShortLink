@@ -15,13 +15,13 @@ export function Button({
   disabled,
   ...props
 }: ButtonProps) {
-  const baseStyles = 'inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
+  const baseStyles = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#0B1220] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer';
   
   const variants = {
-    primary: 'bg-violet-600 hover:bg-violet-700 text-white shadow-sm border border-transparent',
-    secondary: 'bg-slate-100 hover:bg-slate-200 text-slate-800 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-200 border border-transparent',
-    outline: 'border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60',
-    danger: 'bg-red-600 hover:bg-red-700 text-white shadow-sm border border-transparent',
+    primary: 'bg-blue-600 hover:bg-blue-700 text-white shadow-md border border-transparent focus:ring-blue-500',
+    secondary: 'bg-[#1A2332] hover:bg-[#273449] text-[#F9FAFB] border border-[#273449] focus:ring-blue-500',
+    outline: 'border border-[#273449] text-[#94A3B8] hover:text-[#F9FAFB] hover:bg-[#1A2332] focus:ring-blue-500',
+    danger: 'bg-red-600 hover:bg-red-700 text-white shadow-md border border-transparent focus:ring-red-500',
   };
 
   const sizes = {
