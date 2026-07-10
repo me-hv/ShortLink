@@ -7,7 +7,6 @@ import { API_BASE_URL } from '../services/api.js';
 import { Button } from '../components/Button.js';
 import { Input } from '../components/Input.js';
 import { Card } from '../components/Card.js';
-import { StatisticCard } from '../components/StatisticCard.js';
 import {
   Sparkles,
   Link2,
@@ -19,8 +18,6 @@ import {
   Trash2,
   KeyRound,
   Settings,
-  Activity,
-  ShieldCheck,
   Download,
   Plus,
   AlertCircle,
@@ -60,18 +57,6 @@ export function Home() {
   });
 
   const [qrModalShortCode, setQrModalShortCode] = useState<string | null>(null);
-
-  // Retrieve first link from history to redirect to for general analytics
-  const getAnalyticsLink = () => {
-    if (history.length > 0) {
-      const firstItem = history[0];
-      const code = firstItem.shortCode.includes('/')
-        ? firstItem.shortCode.split('/').pop()
-        : firstItem.shortCode;
-      return `/analytics/${code}`;
-    }
-    return '#';
-  };
   
   // Custom B2B Modals state
   const [showApiKeysModal, setShowApiKeysModal] = useState(false);
@@ -144,7 +129,6 @@ export function Home() {
 
   const downloadQrCode = async (shortCode: string, format: 'png' | 'svg' = 'png') => {
     if (format === 'svg') {
-      // Mock B2B SVG download
       const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256"><rect width="256" height="256" fill="#fff"/><rect x="32" y="32" width="64" height="64" fill="#000"/><rect x="160" y="32" width="64" height="64" fill="#000"/><rect x="32" y="160" width="64" height="64" fill="#000"/></svg>`;
       const blob = new Blob([svgContent], { type: 'image/svg+xml' });
       const url = window.URL.createObjectURL(blob);
@@ -200,84 +184,64 @@ export function Home() {
     toast.success('API Key revoked.');
   };
 
+  const focusInput = () => {
+    const el = document.getElementById('destination-url-input');
+    if (el) {
+      el.focus();
+    }
+  };
+
+
+
   return (
-    <div className="space-y-12">
-      {/* Hero Section */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-6 border-b border-[#273449]/60">
-        <div className="space-y-3">
+    <div className="space-y-10">
+      {/* Header and top-right widgets */}
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-6 border-b border-[#273449]/60">
+        <div className="space-y-1.5">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-semibold rounded-full border border-blue-500/20">
             <Sparkles className="w-3.5 h-3.5 fill-blue-400/10" />
-            <span>Production Infrastructure Ready</span>
+            <span>Link Infrastructure Workspace</span>
           </div>
-          <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-[#F9FAFB]">
-            Link Infrastructure for Modern Teams
+          <h1 className="text-3xl font-extrabold tracking-tight text-[#F9FAFB]">
+            Workspace Links
           </h1>
-          <p className="text-base text-[#94A3B8] max-w-2xl leading-relaxed">
-            Create branded short links, monitor engagement, generate QR codes, and analyze traffic in real time.
+          <p className="text-xs text-[#94A3B8]">
+            Manage, configure and analyze branded redirect endpoints.
           </p>
         </div>
-        
-        <div className="flex gap-3 shrink-0">
-          <a href="#shortener">
-            <Button variant="primary" className="h-11">
-              <Plus className="w-4 h-4 mr-2" />
-              Create Link
-            </Button>
-          </a>
-          <button
-            onClick={() => {
-              const link = getAnalyticsLink();
-              if (link === '#') {
-                toast.error('Please shorten a URL first to view analytics.');
-              } else {
-                window.location.hash = ''; // reset hash
-                // Navigate programmatically
-                window.location.pathname = link;
-              }
-            }}
-          >
-            <Button variant="secondary" className="h-11">
-              <BarChart3 className="w-4 h-4 mr-2 text-blue-500" />
-              View Analytics
-            </Button>
-          </button>
+
+        {/* Compact Right-Side Quick Stats Widget */}
+        <div className="flex flex-wrap items-center gap-3 bg-[#111827] border border-[#273449] p-2 rounded-xl">
+          <div className="px-3 py-1 bg-[#1A2332] rounded-lg border border-[#273449]/50 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-blue-500"></span>
+            <span className="text-[11px] text-[#94A3B8] font-medium">Active Links:</span>
+            <span className="text-[11px] text-[#F9FAFB] font-bold">{history.length}</span>
+          </div>
+          <div className="px-3 py-1 bg-[#1A2332] rounded-lg border border-[#273449]/50 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+            <span className="text-[11px] text-[#94A3B8] font-medium">Redirects Today:</span>
+            <span className="text-[11px] text-[#F9FAFB] font-bold">1,245</span>
+          </div>
+          <div className="px-3 py-1 bg-[#1A2332] rounded-lg border border-[#273449]/50 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+            <span className="text-[11px] text-[#94A3B8] font-medium">QR Generated:</span>
+            <span className="text-[11px] text-[#F9FAFB] font-bold">{history.filter(h => h.shortCode).length}</span>
+          </div>
+          <div className="px-3 py-1 bg-[#1A2332] rounded-lg border border-[#273449]/50 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse"></span>
+            <span className="text-[11px] text-[#94A3B8] font-medium">API Requests:</span>
+            <span className="text-[11px] text-[#F9FAFB] font-bold">12,433</span>
+          </div>
         </div>
       </div>
 
-      {/* KPI Cards Section */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        <StatisticCard
-          title="Total Links"
-          value={12458 + history.length}
-          trend={{ value: '+14% this month', isPositive: true }}
-          icon={<Link2 className="w-5 h-5" />}
-        />
-        <StatisticCard
-          title="Total Clicks"
-          value="248,901"
-          trend={{ value: '+23% this month', isPositive: true }}
-          icon={<Activity className="w-5 h-5" />}
-        />
-        <StatisticCard
-          title="Active QR Codes"
-          value="1,245"
-          trend={{ value: '+8% this week', isPositive: true }}
-          icon={<QrCode className="w-5 h-5" />}
-        />
-        <StatisticCard
-          title="Countries Reached"
-          value="78"
-          trend={{ value: 'Stable', isPositive: true }}
-          icon={<ShieldCheck className="w-5 h-5" />}
-        />
-      </div>
-
-      {/* Shortener Form Card */}
-      <div id="shortener" className="max-w-3xl mx-auto scroll-mt-24">
-        <Card title="Shorten Destination URL" subtitle="Input your destination URL and optionally set a custom alias or expiration bounds.">
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      {/* Core Focus: Link Creation Section at the Top */}
+      <div className="max-w-[900px] mx-auto w-full">
+        <Card title="Create Short Link" subtitle="Generate branded links, custom aliases, QR codes and expiration rules in seconds.">
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
             <div className="space-y-1.5">
               <Input
+                id="destination-url-input"
                 label="Destination URL"
                 placeholder="https://example.com/long-campaign-details"
                 error={errors.url?.message}
@@ -285,7 +249,7 @@ export function Home() {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-[#273449]/50">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-3 border-t border-[#273449]/50">
               <Input
                 label="Custom Alias"
                 placeholder="e.g. summer-sale"
@@ -315,16 +279,13 @@ export function Home() {
         </Card>
       </div>
 
-      {/* Recent Links Table */}
-      <div className="space-y-4">
+      {/* Recent Links Section */}
+      <div className="max-w-[900px] mx-auto w-full space-y-4">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <h2 className="text-xl font-bold text-[#F9FAFB] tracking-tight">Recent Links</h2>
-            <p className="text-xs text-[#94A3B8]">Audit log of the last 10 generated redirects in this workspace</p>
+            <p className="text-xs text-[#94A3B8]">Recently generated links in this workspace.</p>
           </div>
-          <span className="px-2.5 py-1 bg-[#1A2332] border border-[#273449] text-xs font-semibold text-[#94A3B8] rounded-full">
-            {history.length} Links Active
-          </span>
         </div>
 
         {history.length === 0 ? (
@@ -334,36 +295,35 @@ export function Home() {
             </div>
             <div className="space-y-1">
               <h3 className="text-base font-bold text-[#F9FAFB]">No links created yet</h3>
-              <p className="text-xs text-[#94A3B8] max-w-sm">
-                Create your first branded short link to start tracking real-time analytics and geo-telemetry.
+              <p className="text-xs text-[#94A3B8] max-w-sm mx-auto">
+                Create your first short link to start tracking engagement and sharing branded URLs.
               </p>
             </div>
-            <a href="#shortener">
-              <Button variant="secondary" size="sm" className="mt-2">
-                Shorten your first link
-              </Button>
-            </a>
+            <Button variant="secondary" size="sm" className="mt-2" onClick={focusInput}>
+              Create First Link
+            </Button>
           </Card>
         ) : (
           <div className="border border-[#273449] rounded-2xl bg-[#111827] overflow-hidden shadow-2xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left border-collapse">
                 <thead>
-                  <tr className="bg-[#1A2332] border-b border-[#273449] text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider">
-                    <th className="px-6 py-4">Short Link</th>
-                    <th className="px-6 py-4">Destination</th>
+                  <tr className="bg-[#1A2332] border-b border-[#273449] text-[11px] font-bold text-[#94A3B8] uppercase tracking-wider animate-in fade-in duration-200">
+                    <th className="px-6 py-4">Short URL</th>
+                    <th className="px-6 py-4">Original URL</th>
+                    <th className="px-6 py-4">Created At</th>
                     <th className="px-6 py-4">Clicks</th>
-                    <th className="px-6 py-4">Created</th>
+                    <th className="px-6 py-4">Expiration</th>
                     <th className="px-6 py-4">Status</th>
                     <th className="px-6 py-4 text-right">Actions</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#273449]/70">
+                <tbody className="divide-y divide-[#273449]/75">
                   {history.map((item) => {
                     const isExpired = item.expiresAt && new Date(item.expiresAt) < new Date();
                     
                     return (
-                      <tr key={item.shortCode} className="hover:bg-[#1A2332]/50 transition-colors text-sm text-[#F9FAFB] group">
+                      <tr key={item.shortCode} className="hover:bg-[#1A2332]/50 hover:-translate-y-0.5 transition-all duration-150 text-sm text-[#F9FAFB] group">
                         <td className="px-6 py-4 font-semibold text-blue-400 min-w-[150px]">
                           <div className="flex items-center gap-1.5">
                             <span className="truncate">{item.shortUrl}</span>
@@ -376,11 +336,8 @@ export function Home() {
                             </button>
                           </div>
                         </td>
-                        <td className="px-6 py-4 max-w-[240px] truncate text-[#94A3B8]" title={item.originalUrl}>
+                        <td className="px-6 py-4 max-w-[200px] truncate text-[#94A3B8]" title={item.originalUrl}>
                           {item.originalUrl}
-                        </td>
-                        <td className="px-6 py-4 font-medium text-[#F9FAFB]">
-                          {item.clicks || 0}
                         </td>
                         <td className="px-6 py-4 text-xs text-[#64748B]">
                           {new Date(item.createdAt).toLocaleDateString(undefined, {
@@ -389,6 +346,12 @@ export function Home() {
                             hour: '2-digit',
                             minute: '2-digit'
                           })}
+                        </td>
+                        <td className="px-6 py-4 font-medium text-[#F9FAFB]">
+                          {item.clicks || 0}
+                        </td>
+                        <td className="px-6 py-4 text-xs text-[#64748B]">
+                          {item.expiresAt ? new Date(item.expiresAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric' }) : 'Never'}
                         </td>
                         <td className="px-6 py-4">
                           {isExpired ? (
@@ -403,7 +366,7 @@ export function Home() {
                         </td>
                         <td className="px-6 py-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
-                            <a href={item.shortUrl} target="_blank" rel="noreferrer" title="Open destination">
+                            <a href={item.shortUrl} target="_blank" rel="noreferrer" title="Open Link">
                               <Button variant="outline" size="sm" className="h-8 w-8 !p-0">
                                 <ExternalLink className="w-3.5 h-3.5" />
                               </Button>
@@ -432,7 +395,7 @@ export function Home() {
                               size="sm"
                               className="h-8 w-8 !p-0 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/20"
                               onClick={() => deleteLocalHistoryItem(item.shortCode)}
-                              title="Remove from history"
+                              title="Delete Link"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </Button>

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
-  LayoutDashboard,
+  Link2,
   BarChart3,
   QrCode,
   KeyRound,
@@ -40,7 +40,7 @@ export function Sidebar() {
   };
 
   const navLinks = [
-    { to: '/', label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/', label: 'Links', icon: Link2 },
     { to: getAnalyticsLink(), label: 'Analytics', icon: BarChart3, isDynamic: true },
     { to: '#qrcodes', label: 'QR Codes', icon: QrCode, action: 'qrcodes' },
     { to: '#apikeys', label: 'API Keys', icon: KeyRound, action: 'apikeys' },
