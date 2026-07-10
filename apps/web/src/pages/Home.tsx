@@ -128,13 +128,15 @@ export function Home() {
   };
 
   const downloadQrCode = async (shortCode: string, format: 'png' | 'svg' = 'png') => {
+    const cleanCode = shortCode.includes('/') ? shortCode.split('/').pop() || shortCode : shortCode;
+    
     if (format === 'svg') {
       const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 256 256"><rect width="256" height="256" fill="#fff"/><rect x="32" y="32" width="64" height="64" fill="#000"/><rect x="160" y="32" width="64" height="64" fill="#000"/><rect x="32" y="160" width="64" height="64" fill="#000"/></svg>`;
       const blob = new Blob([svgContent], { type: 'image/svg+xml' });
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `qr-${shortCode}.svg`;
+      a.download = `qr-${cleanCode}.svg`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -144,13 +146,13 @@ export function Home() {
     }
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/qr/${shortCode}`);
+      const response = await fetch(`${API_BASE_URL}/api/qr/${cleanCode}`);
       if (!response.ok) throw new Error('Failed to fetch QR code image');
       const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = `qr-${shortCode}.png`;
+      a.download = `qr-${cleanCode}.png`;
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);

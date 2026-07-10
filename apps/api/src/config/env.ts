@@ -10,6 +10,7 @@ const envSchema = z.object({
   DATABASE_URL: z.string().min(1, 'DATABASE_URL is required'),
   REDIS_URL: z.string().min(1, 'REDIS_URL is required'),
   REDIS_TOKEN: z.string().min(1, 'REDIS_TOKEN is required'),
+  PUBLIC_WEB_URL: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);

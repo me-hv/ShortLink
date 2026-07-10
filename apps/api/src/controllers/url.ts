@@ -5,6 +5,7 @@ import { ClickLoggerService } from '../services/clickLogger.service.js';
 import { AnalyticsService } from '../services/analytics.service.js';
 import { z } from 'zod';
 import QRCode from 'qrcode';
+import { env } from '../config/env.js';
 
 const shortenSchema = z.object({
   url: z.string().url('Invalid URL format'),
@@ -79,7 +80,11 @@ export class UrlController {
   };
 
   qrCode = async (req: Request, res: Response): Promise<void> => {
-    const { shortCode } = req.params;
+    let shortCode = req.params.shortCode;
+    console.log("QR Request:", shortCode);
+    if (shortCode && shortCode.includes('/')) {
+      shortCode = shortCode.split('/').pop() || shortCode;
+    }
 
     // Ensure the url exists and is active (will throw 410 or 404 if inactive/expired)
     let longUrl = await this.cacheService.get(`url:${shortCode}`);
@@ -90,15 +95,17 @@ export class UrlController {
 
     const host = req.get('host') || 'localhost:3000';
     const protocol = req.protocol || 'http';
-    const shortUrl = `${protocol}://${host}/${shortCode}`;
+    const baseUrl = env.PUBLIC_WEB_URL || `${protocol}://${host}`;
+    const redirectUrl = `${baseUrl}/${shortCode}`;
 
-    const qrPngBuffer = await QRCode.toBuffer(shortUrl, {
+    const qrPngBuffer = await QRCode.toBuffer(redirectUrl, {
       type: 'png',
       width: 256,
       margin: 2,
     });
 
     res.setHeader('Content-Type', 'image/png');
+    res.setHeader('Cache-Control', 'public, max-age=3600');
     res.setHeader('Content-Disposition', `inline; filename="qr-${shortCode}.png"`);
     res.send(qrPngBuffer);
   };
